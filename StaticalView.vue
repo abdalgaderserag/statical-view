@@ -3,19 +3,23 @@
 
         <div style="width: inherit;height: inherit;">
             <!--<div style="float: left">-->
-                <!--<span v-for="num in 10" class="flex-box">{{ num }}</span>-->
+            <!--<span v-for="num in 10" class="flex-box">{{ num }}</span>-->
             <!--</div>-->
             <svg style="width: inherit;height: inherit;">
                 <path v-for="number in horLine"
                       :d="'M '+ number * horSpace +',0 '+ number * horSpace +',' + height"
-                      :style="'fill:none;stroke:'+ lineColor +';stroke-width:'+ strokeWidthPx(number) +'px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1'"/>
+                      :style="'fill:none;stroke:'+ lineColor +';stroke-width:'+ strokeWidthPx(number)
+                      +'px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1'"/>
                 :style="'fill:none;stroke:'+ lineColor +';stroke-width:'+ strokeWidthPx(number)
                 +'px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1'"/>
 
 
                 <path v-for="number in verLine"
                       :d="'m 0,'+ (height - (number * horSpace)) +' ' + width + ',0'"
-                      :style="'fill:none;stroke:'+lineColor+';stroke-width:'+strokeWidth+'px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1'"/>
+                      :style="'fill:none;stroke:'+lineColor+';stroke-width:'+strokeWidth
+                      +'px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1'"/>
+
+                <path :d="line" style="fill: none;stroke: red;stroke-width: 2px;stroke-opacity: 1"/>
             </svg>
         </div>
 
@@ -24,7 +28,7 @@
 
 <script>
     export default {
-        name: "MoneyView",
+        name: "StaticalView",
         data() {
             return {
                 verLine: 0,
@@ -35,16 +39,45 @@
                 width: 0,
                 strokeWidth: 1,
                 horSpace: 0,
-                // verSpace: 0,
+                line: '',
+                firstKey: 'amount',
+                secondKey: 'created_at',
+            }
+        },
+        props: {
+            data: {
+                type: Array,
+                required: true,
+            },
+            max: {
+                type: Number,
+                required: true,
             }
         },
         mounted() {
             this.showView();
+            this.line = "m -" + (20 * this.strokeWidth + 20) + "," + this.height;
+            let array = this.data;
+            let max = this.max * 1.5;
+            let block = max / this.verLine;
+            let position = this.width / (array.length - 1);
+            // let position = this.horSpace;
+            this.line = this.line + ' ' + (20 * this.strokeWidth + 20) + ',-' + (this.horSpace * (array[0][this.firstKey] / block));
+            for (let i = 1; i < array.length; i++) {
+                var size;
+                size = ((array[(i - 1)][this.firstKey] - array[i][this.firstKey]) / block) * this.horSpace;
+                console.log(size);
+                this.line = this.line + ' ' + position + ',' + (size) + '';
+            }
         },
         updated() {
             this.showView();
+            // this.linePath();
         },
         methods: {
+            linePath: function (array, number) {
+
+            },
             strokeWidthPx: function (number) {
                 return this.strokeWidth;
                 if (number % 4 !== 0)
