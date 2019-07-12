@@ -1,17 +1,24 @@
 <template>
     <div class="money-view card view-stat" :style="'background-color: ' + color">
-        <!--<canvas id="statical" style="height: inherit;width: inherit">-->
 
-        <!--</canvas>-->
-        <svg style="width: inherit;height: inherit;fill:">
-            <path v-for="number in horLine"
-                  :d="'M '+ number * horSpace +',0 '+ number * horSpace +',200'"
-                  :style="'fill:none;stroke:'+ lineColor +';stroke-width:'+ strokeWidth +'px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1'"/>
+        <div style="width: inherit;height: inherit;">
+            <!--<div style="float: left">-->
+                <!--<span v-for="num in 10" class="flex-box">{{ num }}</span>-->
+            <!--</div>-->
+            <svg style="width: inherit;height: inherit;">
+                <path v-for="number in horLine"
+                      :d="'M '+ number * horSpace +',0 '+ number * horSpace +',' + height"
+                      :style="'fill:none;stroke:'+ lineColor +';stroke-width:'+ strokeWidthPx(number) +'px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1'"/>
+                :style="'fill:none;stroke:'+ lineColor +';stroke-width:'+ strokeWidthPx(number)
+                +'px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1'"/>
 
-            <path v-for="number in verLine"
-                  :d="'m 0,'+ number * horSpace +' 100,0'"
-                  :style="'fill:none;stroke:'+lineColor+';stroke-width:'+strokeWidth+'px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1'"/>
-        </svg>
+
+                <path v-for="number in verLine"
+                      :d="'m 0,'+ (height - (number * horSpace)) +' ' + width + ',0'"
+                      :style="'fill:none;stroke:'+lineColor+';stroke-width:'+strokeWidth+'px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1'"/>
+            </svg>
+        </div>
+
     </div>
 </template>
 
@@ -20,25 +27,30 @@
         name: "MoneyView",
         data() {
             return {
-                verLine: 2,
-                horLine: 24,
+                verLine: 0,
+                horLine: 58,
                 lineColor: '#c4cdd17d',
                 color: '#fff',
-                strokeWidth: 2,
+                height: 0,
+                width: 0,
+                strokeWidth: 1,
                 horSpace: 0,
                 // verSpace: 0,
             }
         },
         mounted() {
-            // let canvas = document.getElementById('statical');
-            // let ctx = canvas.getContext("2d");
-            // ctx.fillRect(20, 20, 100, 100);
             this.showView();
         },
         updated() {
             this.showView();
         },
         methods: {
+            strokeWidthPx: function (number) {
+                return this.strokeWidth;
+                if (number % 4 !== 0)
+                    return this.strokeWidth;
+                return 3;
+            },
             showView: function () {
                 let view = this.$el;
                 let width;
@@ -47,7 +59,9 @@
                     width = view.offsetWidth + width;
                 }
                 this.horSpace = width / this.horLine;
-                
+                this.verLine = Math.round(view.offsetHeight / this.horSpace);
+                this.height = view.offsetHeight;
+                this.width = view.offsetWidth;
             }
         }
     }
